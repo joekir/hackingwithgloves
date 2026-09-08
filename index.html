@@ -702,20 +702,13 @@
   const bootText = document.getElementById('boot-text');
   const boot = document.getElementById('boot');
 
-  const seen = document.cookie.includes('hwg_seen=1');
-  if (seen) {
-    boot.remove();
-  } else {
-    typeNext();
-  }
-
   let lineIdx = 0, charIdx = 0;
   let content = '';
 
   function typeNext() {
     if (lineIdx >= lines.length) {
       setTimeout(() => {
-        document.cookie = 'hwg_seen=1; max-age=604800; path=/';
+        try { document.cookie = 'hwg_seen=1; max-age=604800; path=/'; } catch(e) {}
         boot.classList.add('fade-out');
         setTimeout(() => boot.remove(), 700);
       }, 800);
@@ -736,7 +729,12 @@
     }
   }
 
-  typeNext();
+  try {
+    const seen = document.cookie.includes('hwg_seen=1');
+    if (seen) { boot.remove(); } else { typeNext(); }
+  } catch(e) {
+    typeNext();
+  }
 
   /* ── Card toggle (mobile tap) ── */
   function toggleCard(card) {
